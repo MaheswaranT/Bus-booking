@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Bus Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded">
+            <h1 class="display-4"><i class="bi bi-bus-front"></i> Welcome to Bus Ticket Booking</h1>
+            <p class="lead">Book your bus tickets easily and conveniently</p>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light">
+                <h5 class="mb-0"><i class="bi bi-search"></i> Search Routes</h5>
+            </div>
+            <div class="card-body">
+                <form method="get" action="{% url 'booking:home' %}">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="search" class="form-label">Search</label>
+                            <input type="text" class="form-control" id="search" name="search" 
+                                   value="{{ search_query }}" placeholder="Search by location name or code">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="origin" class="form-label">From</label>
+                            <select class="form-select" id="origin" name="origin">
+                                <option value="">All Origins</option>
+                                {% for location in locations %}
+                                <option value="{{ location.id }}" {% if origin_filter == location.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ location.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="destination" class="form-label">To</label>
+                            <select class="form-select" id="destination" name="destination">
+                                <option value="">All Destinations</option>
+                                {% for location in locations %}
+                                <option value="{{ location.id }}" {% if dest_filter == location.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ location.name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary w-100">Search</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <h3 class="mb-3">Available Routes</h3>
+        {% if routes %}
+        <div class="row">
+            {% for route in routes %}
+            <div class="col-md-6 mb-3">
+                <div class="card route-card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="bi bi-geo-alt"></i> {{ route.origin.name }} → {{ route.destination.name }}
+                        </h5>
+                        <p class="card-text">
+                            <strong>Distance:</strong> {{ route.distance }} km<br>
+                            <strong>Base Price:</strong> ₹{{ route.base_price }}<br>
+                            <small class="text-muted">Route Code: {{ route.origin.code }} → {{ route.destination.code }}</small>
+                        </p>
+                        <a href="{% url 'booking:buses' route.id %}" class="btn btn-primary">
+                            View Buses <i class="bi bi-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> No routes found. Please try different search criteria.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

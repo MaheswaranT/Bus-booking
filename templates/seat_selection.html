@@ -1,0 +1,164 @@
+{% extends 'base.html' %}
+
+{% block title %}Select Seats - Bus Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'booking:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'booking:buses' route.id %}">Buses</a></li>
+                <li class="breadcrumb-item active">Select Seats</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-bus-front"></i> {{ bus.name }} - {{ route.origin.name }} → {{ route.destination.name }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Travel Date:</strong> {{ travel_date }} | <strong>Price per seat:</strong> ₹{{ price_per_seat|floatformat:2 }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form id="seatForm" method="post" action="{% url 'booking:checkout' %}">
+    {% csrf_token %}
+    <input type="hidden" name="route_bus_id" value="{{ route_bus.id }}">
+    <input type="hidden" name="travel_date" value="{{ travel_date }}">
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Select Your Seats</h5>
+                </div>
+                <div class="card-body">
+                    <div class="seat-layout" id="seatLayout">
+                        {% for row_data in seat_rows %}
+                        <div class="seat-row">
+                            <span class="badge bg-secondary me-2">{{ row_data.row_num }}</span>
+                            
+                            {% for seat_data in row_data.seats %}
+                            {% if seat_data %}
+                            <div class="seat {% if seat_data.is_booked %}booked{% else %}available{% endif %}" 
+                                 data-seat-id="{{ seat_data.seat.id }}"
+                                 {% if not seat_data.is_booked %}onclick="toggleSeat(this)"{% endif %}>
+                                {{ seat_data.seat.seat_number }}
+                            </div>
+                            {% else %}
+                            <div class="seat driver" style="visibility: hidden;"></div>
+                            {% endif %}
+                            
+                            {% if forloop.counter == row_data.left_count %}
+                            <div class="aisle"></div>
+                            {% endif %}
+                            {% endfor %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    
+                    <div class="seat-legend">
+                        <div class="legend-item">
+                            <div class="legend-seat" style="background: #28a745;"></div>
+                            <span>Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat" style="background: #007bff;"></div>
+                            <span>Selected</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat" style="background: #dc3545;"></div>
+                            <span>Booked</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Selected Seats</h5>
+                </div>
+                <div class="card-body">
+                    <div id="selectedSeats">
+                        <p class="text-muted">No seats selected</p>
+                    </div>
+                    <hr>
+                    <div>
+                        <strong>Total Price: ₹<span id="totalPrice">0.00</span></strong>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 mt-3" id="proceedBtn" disabled>
+                        Proceed to Checkout
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+let selectedSeats = [];
+
+function toggleSeat(element) {
+    const seatId = element.getAttribute('data-seat-id');
+    const index = selectedSeats.indexOf(seatId);
+    
+    if (index > -1) {
+        // Deselect
+        selectedSeats.splice(index, 1);
+        element.classList.remove('selected');
+        element.classList.add('available');
+    } else {
+        // Select
+        selectedSeats.push(seatId);
+        element.classList.remove('available');
+        element.classList.add('selected');
+    }
+    
+    updateSelectedSeatsDisplay();
+}
+
+function updateSelectedSeatsDisplay() {
+    const selectedSeatsDiv = document.getElementById('selectedSeats');
+    const totalPriceSpan = document.getElementById('totalPrice');
+    const proceedBtn = document.getElementById('proceedBtn');
+    const pricePerSeat = {{ price_per_seat }};
+    
+    if (selectedSeats.length === 0) {
+        selectedSeatsDiv.innerHTML = '<p class="text-muted">No seats selected</p>';
+        totalPriceSpan.textContent = '0.00';
+        proceedBtn.disabled = true;
+    } else {
+        selectedSeatsDiv.innerHTML = '<p><strong>Seats:</strong> ' + selectedSeats.length + ' selected</p>';
+        const totalPrice = (pricePerSeat * selectedSeats.length).toFixed(2);
+        totalPriceSpan.textContent = totalPrice;
+        proceedBtn.disabled = false;
+        
+        // Add hidden inputs for selected seats
+        const form = document.getElementById('seatForm');
+        // Remove existing seat inputs
+        document.querySelectorAll('input[name="selected_seats"]').forEach(input => input.remove());
+        // Add new inputs
+        selectedSeats.forEach(seatId => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'selected_seats';
+            input.value = seatId;
+            form.appendChild(input);
+        });
+    }
+}
+</script>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}Cancel Booking - Bus Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Cancel Booking</h4>
+            </div>
+            <div class="card-body">
+                <p>Are you sure you want to cancel this booking?</p>
+                
+                <div class="card bg-light mb-3">
+                    <div class="card-body">
+                        <p><strong>Booking ID:</strong> #{{ booking.id }}</p>
+                        <p><strong>Route:</strong> {{ booking.route_bus.route.origin.name }} → {{ booking.route_bus.route.destination.name }}</p>
+                        <p><strong>Travel Date:</strong> {{ booking.travel_date }}</p>
+                        <p><strong>Total Amount:</strong> ₹{{ booking.total_price|floatformat:2 }}</p>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-x-circle"></i> Yes, Cancel Booking
+                        </button>
+                        <a href="{% url 'booking:dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> No, Go Back
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

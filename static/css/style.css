@@ -1,0 +1,149 @@
+/* Custom styles for Bus Ticket Booking System */
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.card {
+    border: none;
+    border-radius: 10px;
+}
+
+.card-header {
+    border-radius: 10px 10px 0 0 !important;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    font-size: 1.5rem;
+}
+
+.seat-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+.seat-row {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+}
+
+.seat {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s;
+    background: white;
+}
+
+.seat:hover:not(.booked):not(.driver) {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.seat.available {
+    background: #28a745;
+    color: white;
+    border-color: #28a745;
+}
+
+.seat.selected {
+    background: #007bff;
+    color: white;
+    border-color: #007bff;
+}
+
+.seat.booked {
+    background: #dc3545;
+    color: white;
+    border-color: #dc3545;
+    cursor: not-allowed;
+}
+
+.seat.driver {
+    background: #6c757d;
+    color: white;
+    border-color: #6c757d;
+    cursor: default;
+}
+
+.aisle {
+    width: 30px;
+}
+
+.seat-legend {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.legend-seat {
+    width: 30px;
+    height: 30px;
+    border: 2px solid #dee2e6;
+    border-radius: 5px;
+}
+
+.route-card {
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.route-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.bus-card {
+    transition: transform 0.2s;
+}
+
+.bus-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.price-badge {
+    font-size: 1.2rem;
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .seat {
+        width: 40px;
+        height: 40px;
+        font-size: 0.8rem;
+    }
+    
+    .aisle {
+        width: 20px;
+    }
+}
+

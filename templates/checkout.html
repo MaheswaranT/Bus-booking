@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+
+{% block title %}Checkout - Bus Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'booking:home' %}">Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'booking:buses' route.id %}">Buses</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'booking:seat_selection' route_bus.id %}?travel_date={{ travel_date }}">Seats</a></li>
+                <li class="breadcrumb-item active">Checkout</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-receipt"></i> Booking Summary</h4>
+            </div>
+            <div class="card-body">
+                <h5>Route Details</h5>
+                <p>
+                    <strong>From:</strong> {{ route.origin.name }} ({{ route.origin.code }})<br>
+                    <strong>To:</strong> {{ route.destination.name }} ({{ route.destination.code }})<br>
+                    <strong>Distance:</strong> {{ route.distance }} km
+                </p>
+                
+                <hr>
+                
+                <h5>Bus Details</h5>
+                <p>
+                    <strong>Bus Name:</strong> {{ bus.name }}<br>
+                    <strong>Bus Type:</strong> {{ bus.bus_type }}<br>
+                    <strong>Departure Time:</strong> {{ route_bus.departure_time }}<br>
+                    <strong>Arrival Time:</strong> {{ route_bus.arrival_time }}
+                </p>
+                
+                <hr>
+                
+                <h5>Travel Information</h5>
+                <p>
+                    <strong>Travel Date:</strong> {{ travel_date }}<br>
+                    <strong>Booking Date:</strong> {% now "Y-m-d" %}
+                </p>
+                
+                <hr>
+                
+                <h5>Selected Seats</h5>
+                <ul class="list-group">
+                    {% for seat in seats %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        Seat {{ seat.seat_number }}
+                        <span class="badge bg-primary rounded-pill">₹{{ price_per_seat|floatformat:2 }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-cash-coin"></i> Payment Summary</h5>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between">
+                        <span>Price per seat:</span>
+                        <span>₹{{ price_per_seat|floatformat:2 }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span>Number of seats:</span>
+                        <span>{{ seats.count }}</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <strong>Total Amount:</strong>
+                        <strong class="text-success">₹{{ total_price|floatformat:2 }}</strong>
+                    </div>
+                </div>
+                
+                <form method="post" action="{% url 'booking:confirm_booking' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="route_bus_id" value="{{ route_bus.id }}">
+                    <input type="hidden" name="travel_date" value="{{ travel_date }}">
+                    {% for seat in seats %}
+                    <input type="hidden" name="selected_seats" value="{{ seat.id }}">
+                    {% endfor %}
+                    
+                    <div class="alert alert-info">
+                        <i class="bi bi-info-circle"></i> This is a simulated payment. Click confirm to complete your booking.
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success w-100">
+                        <i class="bi bi-check-circle"></i> Confirm Booking
+                    </button>
+                </form>
+                
+                <a href="{% url 'booking:seat_selection' route_bus.id %}?travel_date={{ travel_date }}" class="btn btn-outline-secondary w-100 mt-2">
+                    <i class="bi bi-arrow-left"></i> Back to Seat Selection
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

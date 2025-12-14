@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Booking Confirmation - Bus Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow">
+            <div class="card-header bg-success text-white text-center">
+                <h3 class="mb-0"><i class="bi bi-check-circle-fill"></i> Booking Confirmed!</h3>
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-4">
+                    <h4>Booking ID: #{{ booking.id }}</h4>
+                    <p class="text-muted">Your booking has been confirmed successfully.</p>
+                </div>
+                
+                <hr>
+                
+                <h5>Booking Details</h5>
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Route:</strong><br>
+                        {{ booking.route_bus.route.origin.name }} → {{ booking.route_bus.route.destination.name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Bus:</strong><br>
+                        {{ booking.route_bus.bus.name }} ({{ booking.route_bus.bus.bus_type }})</p>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Travel Date:</strong><br>
+                        {{ booking.travel_date }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Booking Date:</strong><br>
+                        {{ booking.booking_date }}</p>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <p><strong>Departure Time:</strong><br>
+                        {{ booking.route_bus.departure_time }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Arrival Time:</strong><br>
+                        {{ booking.route_bus.arrival_time }}</p>
+                    </div>
+                </div>
+                
+                <hr>
+                
+                <h5>Seat Details</h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Seat Number</th>
+                                <th>Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for booking_seat in booking_seats %}
+                            <tr>
+                                <td>{{ booking_seat.seat.seat_number }}</td>
+                                <td>₹{{ booking_seat.price|floatformat:2 }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Total</th>
+                                <th>₹{{ booking.total_price|floatformat:2 }}</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                
+                <hr>
+                
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> 
+                    <strong>Note:</strong> Please arrive at the bus station at least 15 minutes before departure time.
+                </div>
+                
+                <div class="text-center mt-4">
+                    <a href="{% url 'booking:dashboard' %}" class="btn btn-primary">
+                        <i class="bi bi-list-ul"></i> View All Bookings
+                    </a>
+                    <a href="{% url 'booking:home' %}" class="btn btn-outline-secondary">
+                        <i class="bi bi-house"></i> Back to Home
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

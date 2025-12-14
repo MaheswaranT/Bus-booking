@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Buses - Bus Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="row mb-3">
+    <div class="col-12">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'booking:home' %}">Home</a></li>
+                <li class="breadcrumb-item active">{{ route.origin.name }} → {{ route.destination.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="bi bi-bus-front"></i> Available Buses: {{ route.origin.name }} → {{ route.destination.name }}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form method="get" class="mb-3">
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label for="travel_date" class="form-label">Travel Date</label>
+                            <input type="date" class="form-control" id="travel_date" name="travel_date" 
+                                   value="{{ travel_date }}" min="{% now 'Y-m-d' %}">
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label">&nbsp;</label>
+                            <button type="submit" class="btn btn-primary w-100">Filter</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% if buses_with_prices %}
+    {% for item in buses_with_prices %}
+    <div class="col-md-6 mb-4">
+        <div class="card bus-card h-100">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="bi bi-bus-front"></i> {{ item.route_bus.bus.name }}
+                </h5>
+                <p class="card-text">
+                    <strong>Type:</strong> {{ item.route_bus.bus.bus_type }}<br>
+                    <strong>Departure:</strong> {{ item.route_bus.departure_time }}<br>
+                    <strong>Arrival:</strong> {{ item.route_bus.arrival_time }}<br>
+                    <strong>Total Seats:</strong> {{ item.route_bus.bus.total_seats }}<br>
+                    <span class="badge bg-success price-badge">₹{{ item.price|floatformat:2 }} per seat</span>
+                </p>
+                <a href="{% url 'booking:seat_selection' item.route_bus.id %}{% if travel_date %}?travel_date={{ travel_date }}{% endif %}" 
+                   class="btn btn-primary">
+                    Select Seats <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-triangle"></i> No buses available for this route{% if travel_date %} on the selected date{% endif %}.
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+

@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Bus Ticket Booking{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-person-circle"></i> User Profile</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong>Username:</strong> {{ user.username }}</p>
+                        <p><strong>Email:</strong> {{ user.email|default:"Not provided" }}</p>
+                        <p><strong>Date Joined:</strong> {{ user.date_joined|date:"F d, Y" }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong>Last Login:</strong> {{ user.last_login|date:"F d, Y H:i"|default:"Never" }}</p>
+                        <p><strong>Total Bookings:</strong> {{ user.bookings.count }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
